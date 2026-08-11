@@ -1,0 +1,56 @@
+name: Build skill zips
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      skills: ${{ steps.find.outputs.skills }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find top-level skill folders
+        id: find
+        run: |
+          skills=$(find . -maxdepth 2 -mindepth 2 -name 'SKILL.md' \
+            -not -path './.git/*' -not -path './.github/*' \
+            | sed 's|^\./||; s|/SKILL.md$||' \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "skills=$skills" >> "$GITHUB_OUTPUT"
+          echo "Discovered skills: $skills"
+
+  zip:
+    needs: discover
+    if: needs.discover.outputs.skills != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        skill: ${{ fromJson(needs.discover.outputs.skills) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.skill }} zip (Claude Code)
+        run: zip -r "${{ matrix.skill }}-claude-code.zip" "${{ matrix.skill }}" -x '*.DS_Store'
+
+      - name: Build ${{ matrix.skill }} zip (Claude app)
+        run: zip -r "${{ matrix.skill }}-claude-app.zip" "${{ matrix.skill }}" -x '*.DS_Store'
+
+      - name: Upload Claude Code zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.skill }}-claude-code
+          path: ${{ matrix.skill }}-claude-code.zip
+          retention-days: 30
+
+      - name: Upload Claude app zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.skill }}-claude-app
+          path: ${{ matrix.skill }}-claude-app.zip
+          retention-days: 30
