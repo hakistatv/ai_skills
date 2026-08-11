@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: Five-voice adversarial review (Wayfarer, Loremaster, Doomsayer, Alchemist, Marshal) that cross-examines itself, then an Arbiter who issues a binding ruling. EXACT PHRASE ONLY — use this if and only if the user's message contains the exact phrase "Brainstorm this". Critically, the ordinary word "brainstorm" is NOT a trigger — "let's brainstorm", "help me brainstorm", "brainstorm some ideas", "brainstorm names for X", and "can we brainstorm about Y" are all ordinary requests for open-ended ideation and must get an ordinary response. Nor is this triggered by requests for feedback, critique, review, a second opinion, red-teaming, stress-testing, "what am I missing", "is this a good idea", "poke holes in this", or "roast this". Only the exact phrase "Brainstorm this" invokes it; nothing else does, no matter how well the topic matches.
+description: Five-voice adversarial review (Wayfarer, Loremaster, Doomsayer, Alchemist, Marshal) that cross-examines itself, then an Arbiter who issues a binding ruling. HARD PREFIX GATE ONLY — use this if and only if the user's message begins with the literal prefix "brainstorm:" (the word brainstorm immediately followed by a colon, case-insensitive, nothing before it besides optional leading whitespace). Critically, the ordinary word "brainstorm" is NOT a trigger on its own, and a colon appearing later in the message doesn't count either — "let's brainstorm", "help me brainstorm", "brainstorm some ideas", "brainstorm names for X", "can we brainstorm about Y", and "so, brainstorm: what should I do" (colon present but not the first token) are all ordinary requests for open-ended ideation and must get an ordinary response. Nor is this triggered by requests for feedback, critique, review, a second opinion, red-teaming, stress-testing, "what am I missing", "is this a good idea", "poke holes in this", or "roast this". Only a message that starts with "brainstorm:" invokes it; nothing else does, no matter how well the topic matches.
 ---
 
 # Brainstorm
@@ -9,13 +9,15 @@ Draw three, keep what matters. Five voices examine one thing from five incompati
 
 ## Invocation gate
 
-Check for the exact phrase "Brainstorm this" before doing anything else. If it is absent, stop — respond normally, do not run the panel, do not mention that this skill exists, and do not offer to run it. The user chose an explicit trigger precisely so that ordinary requests stay ordinary, and volunteering the panel defeats that.
+Check whether the user's message begins with the literal prefix `brainstorm:` before doing anything else — the word "brainstorm" immediately followed by a colon, case-insensitive, with nothing before it but optional leading whitespace. If it doesn't start that way, stop — respond normally, do not run the panel, do not mention that this skill exists, and do not offer to run it. The user chose an explicit prefix precisely so that ordinary requests stay ordinary, and volunteering the panel defeats that.
 
-Be strict about this, because "brainstorm" on its own is an extremely common word used for ordinary ideation. "Let's brainstorm some taglines" is a request for a list of taglines. "Brainstorm this: my tagline is X" is an invocation. The difference is the phrase, not the topic — when in doubt, treat it as ordinary and answer normally. A missed invocation costs the user one retyped message; a false one costs them a thousand words they did not ask for.
+Be strict about this, because "brainstorm" on its own is an extremely common word used for ordinary ideation, and a colon can show up near it without being the command. "Let's brainstorm: taglines or slogans?" does not start with the prefix — it's a request for a list. "brainstorm: my tagline is X" does start with it — that's an invocation. The difference is the prefix position, not the topic — when in doubt, treat it as ordinary and answer normally. A missed invocation costs the user one retyped message; a false one costs them a thousand words they did not ask for.
 
-The phrase can appear anywhere in the message and applies to whatever the message is about — the artifact may be attached, pasted, or something discussed earlier in the conversation. If the phrase appears with no clear referent, ask what they want reviewed rather than guessing.
+Everything after the colon is the artifact and applies to whatever the message is about — it may be the full topic inline, a reference to something attached or pasted, or something discussed earlier in the conversation. If the prefix is used with no clear referent (e.g. just "brainstorm:" alone), ask what they want reviewed rather than guessing.
 
-The gate is per-message, not per-conversation. Running the panel once does not put the conversation into panel mode; the next message goes back to normal unless it carries the phrase again.
+The gate is per-message, not per-conversation. Running the panel once does not put the conversation into panel mode; the next message goes back to normal unless it carries the prefix again.
+
+**The `/brainstorm` slash command bypasses this gate entirely** (see `commands/brainstorm.md`, installed separately to `.claude/commands/`) — running that command is itself the explicit invocation, so skip the prefix check and start at Phase 0a with whatever argument the command was given.
 
 ## When this is worth it
 

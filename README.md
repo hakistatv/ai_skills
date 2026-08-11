@@ -10,14 +10,17 @@ Each top-level folder is one self-contained skill:
 <skill-name>/
 ├── README.md        # human-facing: what it does, when to use it
 ├── SKILL.md          # Claude-facing: name, description, instructions
-└── references/       # optional supporting files SKILL.md points to
+├── references/       # optional supporting files SKILL.md points to
+└── commands/          # optional Claude Code slash command(s), e.g. /<skill-name>
 ```
+
+`commands/` is Claude Code-only — the Claude app has no slash-command mechanism, so a skill's Claude-app zip omits that folder even when it exists.
 
 ## Skills
 
 | Skill | Trigger | What it does |
 |---|---|---|
-| [`brainstorm/`](brainstorm/) | exact phrase "Brainstorm this" | Five-voice adversarial review panel with a binding Arbiter ruling |
+| [`brainstorm/`](brainstorm/) | message starts with `brainstorm:`, or `/brainstorm` (Claude Code) | Five-voice adversarial review panel with a binding Arbiter ruling |
 
 Add a row here whenever a new skill folder is added.
 
@@ -27,7 +30,7 @@ Every push to `main` runs the **Build skill zips** GitHub Actions workflow. It a
 
 1. Go to the [Actions tab](https://github.com/hakistatv/ai_skills/actions/workflows/build-skill-zips.yml).
 2. Open the latest successful run.
-3. Under **Artifacts**, download `<skill-name>-claude-code` or `<skill-name>-claude-app` for the skill you want (both contain the same files — pick either).
+3. Under **Artifacts**, download `<skill-name>-claude-code` for Claude Code, or `<skill-name>-claude-app` for the Claude app. They're usually identical, except the Claude Code zip also includes `commands/` (slash commands) if the skill ships one — the Claude app zip strips that out since it has no use for it.
 4. Unzip it — you'll get a `<skill-name>/` folder.
 
 You can also trigger a build manually from that same page with **Run workflow**.
@@ -45,6 +48,12 @@ cp -r <skill-name> /path/to/your/project/.claude/skills/<skill-name>
 ```
 
 Restart Claude Code (or start a new session) and it will pick up the skill automatically.
+
+If the skill ships a `commands/` folder, also copy its slash command(s) so `/<skill-name>` works as an explicit invocation:
+
+```bash
+cp <skill-name>/commands/*.md ~/.claude/commands/
+```
 
 ## Using a skill in the Claude app
 

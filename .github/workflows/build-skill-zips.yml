@@ -39,7 +39,8 @@ jobs:
         run: zip -r "${{ matrix.skill }}-claude-code.zip" "${{ matrix.skill }}" -x '*.DS_Store'
 
       - name: Build ${{ matrix.skill }} zip (Claude app)
-        run: zip -r "${{ matrix.skill }}-claude-app.zip" "${{ matrix.skill }}" -x '*.DS_Store'
+        # The Claude app has no slash-command mechanism, so leave commands/ out.
+        run: zip -r "${{ matrix.skill }}-claude-app.zip" "${{ matrix.skill }}" -x '*.DS_Store' -x "${{ matrix.skill }}/commands/*"
 
       - name: Upload Claude Code zip
         uses: actions/upload-artifact@v4
