@@ -12,7 +12,7 @@ jobs:
       skills: ${{ steps.find.outputs.skills }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Find top-level skill folders
         id: find
@@ -33,7 +33,7 @@ jobs:
         skill: ${{ fromJson(needs.discover.outputs.skills) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build ${{ matrix.skill }} zip (Claude Code)
         run: zip -r "${{ matrix.skill }}-claude-code.zip" "${{ matrix.skill }}" -x '*.DS_Store'
@@ -43,15 +43,15 @@ jobs:
         run: zip -r "${{ matrix.skill }}-claude-app.zip" "${{ matrix.skill }}" -x '*.DS_Store' -x "${{ matrix.skill }}/commands/*"
 
       - name: Upload Claude Code zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.skill }}-claude-code
           path: ${{ matrix.skill }}-claude-code.zip
-          retention-days: 30
+          retention-days: 90
 
       - name: Upload Claude app zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.skill }}-claude-app
           path: ${{ matrix.skill }}-claude-app.zip
-          retention-days: 30
+          retention-days: 90
