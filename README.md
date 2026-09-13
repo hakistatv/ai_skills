@@ -26,14 +26,17 @@ Add a row here whenever a new skill folder is added.
 
 ## Getting the zips
 
-Every push to `main` runs the **Build skill zips** GitHub Actions workflow. It auto-discovers every top-level folder containing a `SKILL.md` and packages each one into two zips:
+Every push to `main` runs the **Build skill zips** GitHub Actions workflow. It auto-discovers every top-level folder containing a `SKILL.md` and packages each one into two zips: `<skill-name>-claude-code` for Claude Code, and `<skill-name>-claude-app` for the Claude app. They're usually identical, except the Claude Code zip also includes `commands/` (slash commands) if the skill ships one — the Claude app zip strips that out since it has no use for it.
 
+**Option A — permanent link (recommended):** grab them from the [`skill-zips-latest` release](https://github.com/hakistatv/ai_skills/releases/tag/skill-zips-latest). Its assets are overwritten on every push to `main` and never expire.
+
+**Option B — from a specific run:**
 1. Go to the [Actions tab](https://github.com/hakistatv/ai_skills/actions/workflows/build-skill-zips.yml).
-2. Open the latest successful run.
-3. Under **Artifacts**, download `<skill-name>-claude-code` for Claude Code, or `<skill-name>-claude-app` for the Claude app. They're usually identical, except the Claude Code zip also includes `commands/` (slash commands) if the skill ships one — the Claude app zip strips that out since it has no use for it.
+2. Open the run you want.
+3. Download the zip(s) you need under **Artifacts**. These expire after 90 days (GitHub's maximum retention for workflow artifacts).
 4. Unzip it — you'll get a `<skill-name>/` folder.
 
-You can also trigger a build manually from that same page with **Run workflow**.
+You can also trigger a build manually from the Actions page with **Run workflow**.
 
 ## Using a skill in Claude Code
 

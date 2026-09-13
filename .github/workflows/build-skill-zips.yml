@@ -55,3 +55,31 @@ jobs:
           name: ${{ matrix.skill }}-claude-app
           path: ${{ matrix.skill }}-claude-app.zip
           retention-days: 90
+
+  release:
+    needs: zip
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all skill zips
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+          pattern: '*-claude-*'
+          merge-multiple: true
+
+      # 90-day workflow artifacts (above) expire; this release doesn't, so it's
+      # the permanent, stable-URL place to grab the latest zips from.
+      - name: Publish permanent release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: skill-zips-latest
+          name: Latest skill zips
+          make_latest: false
+          body: |
+            Auto-published by the **Build skill zips** workflow.
+            Built from commit ${{ github.sha }}.
+
+            Assets here are replaced on every push to `main` and never expire.
+          files: dist/*
